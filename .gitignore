@@ -1,0 +1,19 @@
+# dependencies
+/node_modules
+
+# build output
+/dist
+*.tsbuildinfo
+
+# env files (.env.example is committed)
+.env*
+!.env.example
+
+# logs and OS files
+npm-debug.log*
+.DS_Store
+*.pem
+
+# Supabase local state
+supabase/.branches
+supabase/.temp
