@@ -6,7 +6,7 @@ import { deleteGitRepository, initGitRepository } from "./git";
 import { DEMO_WRITE_ERROR, isDemo } from "./mode";
 
 const OWNER_EMBED = "owner:profiles!repositories_owner_id_fkey(id, username, display_name, avatar_url)";
-const REPO_COLUMNS = `id, owner_id, name, description, website_url, topics, visibility, default_branch, created_at, updated_at, pushed_at, ${OWNER_EMBED}`;
+const REPO_COLUMNS = `id, owner_id, name, description, website_url, topics, visibility, default_branch, is_empty, created_at, updated_at, pushed_at, ${OWNER_EMBED}`;
 const LIST_COLUMNS = `id, name, description, topics, visibility, updated_at, pushed_at, ${OWNER_EMBED}`;
 
 export async function getRepository(owner: string, name: string): Promise<Repository | null> {
@@ -75,7 +75,6 @@ export async function createRepository(viewer: Viewer, input: NewRepository): Pr
   const { data, error } = await supabase()
     .from("repositories")
     .insert({
-      owner_id: viewer.id,
       name: input.name,
       description: input.description,
       visibility: input.visibility,

@@ -1,6 +1,6 @@
 import { Link, redirect, useLoaderData, useNavigate, type LoaderFunctionArgs } from "react-router";
 import { MailCheck } from "lucide-react";
-import { AuthCard, OrDivider } from "@/components/auth/auth-card";
+import { AuthCard } from "@/components/auth/auth-card";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import { errorsOf, Field, FormMessage, SubmitButton } from "@/components/ui/form";
 import { safeNext, signUp } from "@/lib/auth";
@@ -51,7 +51,6 @@ export default function SignupPage() {
       ) : (
         <>
           <OAuthButtons next={next} verb="Sign up" />
-          <OrDivider />
           <form onSubmit={onSubmit} className="space-y-4">
             <Field label="Username" htmlFor="username" error={errors.username} hint="Letters, numbers and hyphens. This is your public name.">
               <input id="username" name="username" autoComplete="username" required maxLength={39} className="input" />
@@ -59,7 +58,7 @@ export default function SignupPage() {
             <Field label="Email address" htmlFor="email" error={errors.email}>
               <input id="email" name="email" type="email" autoComplete="email" required className="input" />
             </Field>
-            <Field label="Password" htmlFor="password" error={errors.password} hint="At least 8 characters.">
+            <Field label="Password" htmlFor="password" error={errors.password} hint="At least 8 characters, with letters and numbers.">
               <input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} className="input" />
             </Field>
             <FormMessage state={result} />

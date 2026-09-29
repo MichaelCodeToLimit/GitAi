@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { FilePlus2, Upload } from "lucide-react";
 import { CopyButton } from "@/components/ui/copy-button";
 import { cloneUrl } from "@/lib/data/git";
+import { gitServerUrl, isDemo } from "@/lib/data/mode";
 import { repoUrl } from "@/lib/paths";
 
 function Snippet({ title, code }: { title: string; code: string }) {
@@ -37,6 +38,22 @@ export function EmptyRepo({
       <div className="card px-6 py-16 text-center">
         <h2 className="text-lg font-semibold">This repository is empty.</h2>
         <p className="mt-1 text-fg-muted">Nothing has been pushed to it yet.</p>
+      </div>
+    );
+  }
+
+  if (!gitServerUrl && !isDemo) {
+    return (
+      <div className="card px-6 py-14 text-center">
+        <h2 className="text-lg font-semibold">Your repository is ready</h2>
+        <p className="mx-auto mt-1 max-w-md text-fg-muted">
+          Git hosting is still being set up. Soon you&apos;ll be able to push code here from your terminal and add files in the
+          browser. Meanwhile, create a{" "}
+          <Link to="/settings/tokens" className="text-link hover:underline">
+            personal access token
+          </Link>{" "}
+          so you&apos;re ready to push.
+        </p>
       </div>
     );
   }

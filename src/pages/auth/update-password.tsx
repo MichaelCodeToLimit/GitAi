@@ -29,7 +29,7 @@ export default function UpdatePasswordPage() {
         </div>
       ) : (
         <form onSubmit={onSubmit} className="space-y-4">
-          <Field label="New password" htmlFor="password" error={errors.password} hint="At least 8 characters.">
+          <Field label="New password" htmlFor="password" error={errors.password} hint="At least 8 characters, with letters and numbers.">
             <input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} className="input" autoFocus />
           </Field>
           <Field label="Confirm new password" htmlFor="confirm" error={errors.confirm}>

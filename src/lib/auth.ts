@@ -1,7 +1,7 @@
 // Sign-in flows, run in the browser against Supabase Auth.
 
 import { z } from "zod";
-import { siteUrl } from "@/lib/env";
+import { siteUrl, supabaseKey, supabaseUrl } from "@/lib/env";
 import { setDemoViewer } from "@/lib/data/demo";
 import { DEMO_WRITE_ERROR, isDemo } from "@/lib/data/mode";
 import { isUsernameTaken } from "@/lib/data/profiles";
@@ -11,6 +11,19 @@ import type { ActionResult } from "@/lib/types";
 import { fieldErrors, passwordSchema, usernameSchema } from "@/lib/validation";
 
 export type OAuthProvider = "github" | "google" | "azure" | "apple";
+
+const ALL_PROVIDERS: OAuthProvider[] = ["github", "google", "azure", "apple"];
+let enabledProviders: Promise<OAuthProvider[]> | null = null;
+
+/** Providers switched on in Supabase Auth, read from its public settings so buttons appear once enabled. */
+export function getEnabledProviders(): Promise<OAuthProvider[]> {
+  if (isDemo) return Promise.resolve(ALL_PROVIDERS);
+  enabledProviders ??= fetch(`${supabaseUrl}/auth/v1/settings`, { headers: { apikey: supabaseKey } })
+    .then((res) => (res.ok ? res.json() : { external: {} }))
+    .then((settings: { external?: Record<string, boolean> }) => ALL_PROVIDERS.filter((p) => settings.external?.[p]))
+    .catch(() => []);
+  return enabledProviders;
+}
 
 /** Only allow same-site relative redirects after sign-in. */
 export function safeNext(value: string | null | undefined) {

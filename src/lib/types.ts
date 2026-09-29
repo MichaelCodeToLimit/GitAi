@@ -31,6 +31,8 @@ export type Repository = {
   created_at: string;
   updated_at: string;
   pushed_at: string | null;
+  /** True until the first push (kept up to date by the Git server). */
+  is_empty: boolean;
   owner: ProfileSummary;
 };
 

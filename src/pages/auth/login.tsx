@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, redirect, useLoaderData, useNavigate, useRevalidator, type LoaderFunctionArgs } from "react-router";
 import { FlaskConical } from "lucide-react";
-import { AuthCard, OrDivider } from "@/components/auth/auth-card";
+import { AuthCard } from "@/components/auth/auth-card";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import { Field, FormMessage, SubmitButton } from "@/components/ui/form";
 import { safeNext, sendMagicLink, signInWithPassword } from "@/lib/auth";
@@ -36,7 +36,6 @@ export default function LoginPage() {
       <title>{`Sign in · ${SITE_NAME}`}</title>
       {isDemo && <DemoSignIn next={next} />}
       <OAuthButtons next={next} verb="Sign in" />
-      <OrDivider />
       <LoginForm next={next} />
     </AuthCard>
   );

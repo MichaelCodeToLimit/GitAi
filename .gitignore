@@ -8,6 +8,7 @@
 # env files (.env.example is committed)
 .env*
 !.env.example
+!.env.production
 
 # logs and OS files
 npm-debug.log*

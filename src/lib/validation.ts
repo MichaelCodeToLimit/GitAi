@@ -49,7 +49,12 @@ export const topicsSchema = z
   .refine((list) => list.length <= 20, "Up to 20 topics")
   .refine((list) => list.every((t) => /^[a-z0-9][a-z0-9-]{0,34}$/.test(t)), "Topics use lowercase letters, numbers and hyphens");
 
-export const passwordSchema = z.string().min(8, "Use at least 8 characters").max(72, "Use at most 72 characters");
+export const passwordSchema = z
+  .string()
+  .min(8, "Use at least 8 characters")
+  .max(72, "Use at most 72 characters")
+  .regex(/[A-Za-z]/, "Include at least one letter")
+  .regex(/[0-9]/, "Include at least one number");
 
 export function fieldErrors(error: z.ZodError): Record<string, string> {
   const out: Record<string, string> = {};

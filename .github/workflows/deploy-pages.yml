@@ -1,8 +1,6 @@
 # Builds the website and publishes it to GitHub Pages on every push to main.
 # One-time setup: repository Settings -> Pages -> Source: "GitHub Actions".
-# Optional repository variables (Settings -> Secrets and variables -> Actions -> Variables):
-#   VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_GIT_SERVER_URL
-# Without them the site is built in demo mode with sample data.
+# Connection settings (Supabase URL and publishable key, Git server URL) come from .env.production.
 
 name: Deploy website to GitHub Pages
 
@@ -44,9 +42,6 @@ jobs:
         env:
           # "/<repo>/" for a project site, "/" when a custom domain is set.
           VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
-          VITE_GIT_SERVER_URL: ${{ vars.VITE_GIT_SERVER_URL }}
 
       - uses: actions/upload-pages-artifact@v5
         with:

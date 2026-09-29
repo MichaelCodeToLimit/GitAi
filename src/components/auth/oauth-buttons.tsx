@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { signInWithProvider, type OAuthProvider } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import { OrDivider } from "@/components/auth/auth-card";
+import { getEnabledProviders, signInWithProvider, type OAuthProvider } from "@/lib/auth";
 
 // Provider marks for the sign-in buttons.
 const ICONS: Record<OAuthProvider, React.ReactNode> = {
@@ -36,6 +37,15 @@ const LABELS: Record<OAuthProvider, string> = { github: "GitHub", google: "Googl
 export function OAuthButtons({ next, verb }: { next: string; verb: "Sign in" | "Sign up" }) {
   const [busy, setBusy] = useState<OAuthProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [providers, setProviders] = useState<OAuthProvider[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    void getEnabledProviders().then((list) => alive && setProviders(list));
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   async function go(provider: OAuthProvider) {
     setBusy(provider);
@@ -48,10 +58,12 @@ export function OAuthButtons({ next, verb }: { next: string; verb: "Sign in" | "
     }
   }
 
+  if (!providers.length) return null;
+
   return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-2 gap-2">
-        {(Object.keys(LABELS) as OAuthProvider[]).map((provider) => (
+    <div className="space-y-4">
+      <div className={`grid gap-2 ${providers.length > 1 ? "grid-cols-2" : ""}`}>
+        {providers.map((provider) => (
           <button
             key={provider}
             type="button"
@@ -70,6 +82,7 @@ export function OAuthButtons({ next, verb }: { next: string; verb: "Sign in" | "
           {error}
         </p>
       )}
+      <OrDivider />
     </div>
   );
 }

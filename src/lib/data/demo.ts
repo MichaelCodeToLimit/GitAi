@@ -69,6 +69,7 @@ function toRepository(repo: DemoRepo): Repository {
     created_at: ago(repo.created),
     updated_at: pushed ?? ago(repo.created),
     pushed_at: pushed,
+    is_empty: repo.commits.length === 0,
     owner: summary(repo.owner),
   };
 }
