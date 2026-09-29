@@ -43,6 +43,9 @@ jobs:
           # "/<repo>/" for a project site, "/" when a custom domain is set.
           VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
 
+      # Tabs opened before this deploy still need the previous version's files.
+      - run: node scripts/keep-previous-assets.mjs "${{ steps.pages.outputs.base_url }}/"
+
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
