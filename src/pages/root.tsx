@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { isRouteErrorResponse, Link, Outlet, ScrollRestoration, useNavigation, useRouteError } from "react-router";
 import { DemoBanner } from "@/components/layout/demo-banner";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { LogoMark } from "@/components/logo";
 import { getViewer } from "@/lib/data/session";
+import { isStaleBuildError, reloadForNewVersion } from "@/lib/new-version";
 
 export async function loader() {
   return { viewer: await getViewer() };
@@ -66,9 +68,30 @@ export function NotFound() {
   );
 }
 
+/**
+ * Shown when this tab asked for a page file that a redeploy removed. The address already points
+ * at the page the person wanted, so reloading lands them there on the new version.
+ */
+function NewVersion() {
+  useEffect(() => {
+    reloadForNewVersion();
+  }, []);
+  return (
+    <div className="mx-auto flex max-w-lg flex-1 flex-col items-center justify-center px-4 py-24 text-center">
+      <title>Update available · Git AI</title>
+      <h1 className="text-2xl font-semibold">Git AI was updated</h1>
+      <p className="mt-2 text-fg-muted">A new version came out while this tab was open. Reloading…</p>
+      <button type="button" className="btn btn-primary mt-6" onClick={() => window.location.reload()}>
+        Reload
+      </button>
+    </div>
+  );
+}
+
 export function ErrorBoundary() {
   const error = useRouteError();
   if (isRouteErrorResponse(error) && error.status === 404) return <NotFound />;
+  if (isStaleBuildError(error)) return <NewVersion />;
   const message = isRouteErrorResponse(error) ? `${error.status} ${error.statusText}` : error instanceof Error ? error.message : String(error);
 
   return (
