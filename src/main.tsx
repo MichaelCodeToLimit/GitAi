@@ -14,13 +14,19 @@ import { routes } from "./routes";
 
 const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL.replace(/\/+$/, "") || "/" });
 
-// Re-run loaders when someone signs in or out in this or another tab.
+// Re-run loaders when the signed-in user changes, in this or another tab.
 if (!isDemo) {
-  supabase().auth.onAuthStateChange((event) => {
-    if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-      resetViewer();
-      void router.revalidate();
-    }
+  let currentUserId: string | null | undefined;
+  supabase().auth.onAuthStateChange((event, session) => {
+    const userId = session?.user.id ?? null;
+    const changed = currentUserId !== undefined && userId !== currentUserId;
+    currentUserId = userId;
+    if (!changed && event !== "USER_UPDATED") return; // e.g. token refreshes, or SIGNED_IN on tab focus
+
+    resetViewer();
+    // The auth callback pages redirect by themselves when sign-in finishes. Re-running their
+    // loaders would try to use the one-time sign-in code a second time.
+    if (!/\/auth\/(callback|confirm)$/.test(router.state.location.pathname)) void router.revalidate();
   });
 }
 
