@@ -2,12 +2,13 @@ import { useState } from "react";
 import { redirect, useFetcher, useLoaderData, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { Globe, Lock } from "lucide-react";
 import { z } from "zod";
+import { RepoNameInput } from "@/components/repo/repo-name-input";
 import { errorsOf, Field, FormMessage, SubmitButton } from "@/components/ui/form";
 import { deleteRepository, updateRepository } from "@/lib/data/repos";
 import { loadRefs, loadRepo, notFound } from "@/lib/repo-context";
 import { SITE_NAME } from "@/lib/site";
 import type { ActionResult } from "@/lib/types";
-import { fieldErrors, optionalText, optionalUrl, repoNameSchema, topicsSchema } from "@/lib/validation";
+import { fieldErrors, optionalText, optionalUrl, repoNameSchema, toRepoName, topicsSchema } from "@/lib/validation";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const ctx = await loadRepo(params.owner ?? "", params.repo ?? "");
@@ -40,7 +41,7 @@ export async function action({ params, request }: ActionFunctionArgs): Promise<A
   }
 
   const parsed = schema.safeParse({
-    name: form.get("name") ?? "",
+    name: toRepoName(String(form.get("name") ?? "")),
     description: form.get("description") ?? "",
     website_url: form.get("website_url") ?? "",
     topics: form.get("topics") ?? "",
@@ -71,9 +72,9 @@ export default function RepoSettingsPage() {
       <section>
         <h1 className="border-b border-line-muted pb-2 text-2xl font-semibold">General</h1>
         <general.Form method="post" className="space-y-5 pt-5">
-          <Field label="Repository name" htmlFor="name" error={errors.name}>
-            <input id="name" name="name" defaultValue={repo.name} className="input max-w-sm" required maxLength={100} />
-          </Field>
+          <div className="max-w-sm">
+            <RepoNameInput defaultValue={repo.name} error={errors.name} verb="renamed" />
+          </div>
           <Field label="Description" htmlFor="description" optional error={errors.description}>
             <input id="description" name="description" defaultValue={repo.description ?? ""} className="input" maxLength={350} />
           </Field>

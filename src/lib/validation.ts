@@ -18,6 +18,23 @@ export const usernameSchema = z
   .regex(USERNAME_PATTERN, "Use letters, numbers and single hyphens; no hyphen at the start or end")
   .refine((u) => !RESERVED_USERNAMES.has(u.toLowerCase()), "That username is reserved");
 
+/**
+ * Turns whatever someone typed into a valid repository name, like GitHub does:
+ * "test git ai v1" -> "test-git-ai-v1". Characters that can't appear in web or Git addresses
+ * become hyphens.
+ */
+export function toRepoName(input: string): string {
+  return input
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "") // "café" -> "cafe"
+    .trim()
+    .replace(/[^A-Za-z0-9._-]+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^[-.]+|-+$/g, "")
+    .replace(/\.git$/i, "")
+    .slice(0, 100);
+}
+
 export const repoNameSchema = z
   .string()
   .trim()

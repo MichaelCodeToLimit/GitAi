@@ -7,7 +7,8 @@ import { createRepository } from "@/lib/data/repos";
 import { getViewer } from "@/lib/data/session";
 import { SITE_NAME } from "@/lib/site";
 import type { ActionResult } from "@/lib/types";
-import { fieldErrors, optionalText, repoNameSchema } from "@/lib/validation";
+import { RepoNameInput } from "@/components/repo/repo-name-input";
+import { fieldErrors, optionalText, repoNameSchema, toRepoName } from "@/lib/validation";
 
 export async function loader() {
   const viewer = await getViewer();
@@ -27,7 +28,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<ActionRes
   if (!viewer) throw redirect("/login?next=/new");
   const form = await request.formData();
   const parsed = schema.safeParse({
-    name: form.get("name") ?? "",
+    name: toRepoName(String(form.get("name") ?? "")),
     description: form.get("description") ?? "",
     visibility: form.get("visibility"),
     readme: form.get("readme") === "on",
@@ -64,12 +65,9 @@ export default function NewRepositoryPage() {
           </div>
           <span className="pb-1.5 text-xl text-fg-muted">/</span>
           <div className="min-w-60 flex-1">
-            <Field label="Repository name" htmlFor="name" error={errors.name}>
-              <input id="name" name="name" required maxLength={100} className="input" autoFocus autoComplete="off" />
-            </Field>
+            <RepoNameInput autoFocus error={errors.name} />
           </div>
         </div>
-        <p className="-mt-3 text-xs text-fg-muted">Short and memorable works best, like hello-world or my-cli.</p>
 
         <Field label="Description" htmlFor="description" optional error={errors.description}>
           <input id="description" name="description" maxLength={350} className="input" />
